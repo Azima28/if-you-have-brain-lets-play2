@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private bool isGrounded = false;
+    private float moveX;
 
     void Start()
     {
@@ -20,29 +21,50 @@ public class PlayerMovement : MonoBehaviour
         }
         
         rb.freezeRotation = true;
+        
+        // Memastikan deteksi tabrakan lebih akurat untuk objek yang bergerak cepat
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        
+        // Menghaluskan pergerakan sprite
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     void Update()
     {
         if (rb == null) return;
 
-        // Gerak kiri-kanan (A/D)
-        float moveX = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(moveX * speed, rb.velocity.y);
+        // Ambil input di Update agar responsif
+        moveX = Input.GetAxisRaw("Horizontal");
 
         // Loncat (Space)
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
+            // Reset velocity Y sebelum loncat agar kekuatan loncatan konsisten
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             isGrounded = false;
             Debug.Log("LONCAT!");
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void FixedUpdate()
     {
-        isGrounded = true;
-        Debug.Log("Menyentuh: " + collision.gameObject.name);
+        if (rb == null) return;
+
+        // Terapkan pergerakan di FixedUpdate untuk kestabilan fisika
+        rb.velocity = new Vector2(moveX * speed, rb.velocity.y);
+    }
+
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        // Mengecek apakah tabrakan terjadi dari bawah (tanah)
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            if (contact.normal.y > 0.5f) // Normal ke atas berarti kita di atas sesuatu
+            {
+                isGrounded = true;
+                break;
+            }
+        }
     }
 
     void OnCollisionExit2D(Collision2D collision)
