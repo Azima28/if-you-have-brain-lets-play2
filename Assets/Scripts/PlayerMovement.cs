@@ -38,14 +38,14 @@ public class PlayerMovement : MonoBehaviour
         // Ambil input di Update agar responsif
         moveX = Input.GetAxisRaw("Horizontal");
 
-        // Berbalik arah sesuai gerakan
+        // Berbalik arah sesuai gerakan (sprite default menghadap kiri)
         if (moveX > 0)
         {
-            spriteRenderer.flipX = false; // Menghadap kanan
+            spriteRenderer.flipX = true; // Menghadap kanan
         }
         else if (moveX < 0)
         {
-            spriteRenderer.flipX = true; // Menghadap kiri
+            spriteRenderer.flipX = false; // Menghadap kiri
         }
 
         // Loncat (Space)
