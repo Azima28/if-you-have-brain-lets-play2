@@ -6,12 +6,14 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 10f;
 
     private Rigidbody2D rb;
+    private SpriteRenderer spriteRenderer;
     private bool isGrounded = false;
     private float moveX;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         
         // Cek apakah Rigidbody2D ada
         if (rb == null)
@@ -35,6 +37,16 @@ public class PlayerMovement : MonoBehaviour
 
         // Ambil input di Update agar responsif
         moveX = Input.GetAxisRaw("Horizontal");
+
+        // Berbalik arah sesuai gerakan
+        if (moveX > 0)
+        {
+            spriteRenderer.flipX = false; // Menghadap kanan
+        }
+        else if (moveX < 0)
+        {
+            spriteRenderer.flipX = true; // Menghadap kiri
+        }
 
         // Loncat (Space)
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
