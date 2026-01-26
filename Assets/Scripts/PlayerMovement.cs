@@ -31,6 +31,16 @@ public class PlayerMovement : MonoBehaviour
         
         // Menghaluskan pergerakan sprite
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+
+        // Biar tidak nempel di tembok saat loncat (friction = 0)
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+        {
+            PhysicsMaterial2D noFriction = new PhysicsMaterial2D("NoFriction");
+            noFriction.friction = 0f;
+            noFriction.bounciness = 0f;
+            col.sharedMaterial = noFriction;
+        }
     }
 
     void Update()
