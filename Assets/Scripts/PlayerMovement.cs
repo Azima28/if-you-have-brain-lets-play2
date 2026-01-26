@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
     private bool isGrounded = false;
     private float moveX;
 
@@ -14,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
         
         // Cek apakah Rigidbody2D ada
         if (rb == null)
@@ -46,6 +48,16 @@ public class PlayerMovement : MonoBehaviour
         else if (moveX < 0)
         {
             spriteRenderer.flipX = false; // Menghadap kiri
+        }
+
+        // Set animator parameters
+        if (animator != null)
+        {
+            bool isMoving = Mathf.Abs(moveX) > 0;
+            
+            animator.SetBool("IsIdle", !isMoving && isGrounded);
+            animator.SetBool("IsRunning", isMoving && isGrounded);
+            animator.SetBool("IsJump", !isGrounded);
         }
 
         // Loncat (Space)
