@@ -256,6 +256,8 @@ MonoBehaviour:
   player: {fileID: 1972462766}
   smoothSpeed: 5
   offset: {x: 0, y: 1, z: -10}
+  lockVertical: 0
+  currentZone: {fileID: 0}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,6 +552,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destination: {fileID: 1449454312}
   fadeDuration: 1
+  destinationZone: {fileID: 0}
   fadePanel: {fileID: 0}
 --- !u!61 &1163563671
 BoxCollider2D:
@@ -748,8 +751,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1286213018}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 36.4351, y: -9.06, z: 0}
-  m_LocalScale: {x: 43.26824, y: 1.0620997, z: 1}
+  m_LocalPosition: {x: 29.8443, y: -9.06, z: 0}
+  m_LocalScale: {x: 30.088736, y: 1.0620997, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

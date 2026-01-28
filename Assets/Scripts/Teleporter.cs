@@ -7,6 +7,10 @@ public class Teleporter : MonoBehaviour
     [Header("Teleport Settings")]
     public Transform destination;  // Lokasi tujuan teleport
     public float fadeDuration = 0.5f;  // Durasi fade in/out
+    
+    [Header("Camera Zone Tujuan (Opsional)")]
+    [Tooltip("Jika di-assign, kamera akan ganti zone saat teleport")]
+    public CameraZone destinationZone;
 
     [Header("Fade Panel (Auto-created if null)")]
     public Image fadePanel;
@@ -85,6 +89,12 @@ public class Teleporter : MonoBehaviour
 
         // Teleport player
         player.position = destination.position;
+
+        // Ganti camera zone jika ada
+        if (destinationZone != null && CameraFollow.Instance != null)
+        {
+            CameraFollow.Instance.SetZone(destinationZone);
+        }
 
         // Fade ke terang
         yield return StartCoroutine(Fade(1, 0));

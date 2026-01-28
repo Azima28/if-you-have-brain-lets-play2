@@ -31,6 +31,9 @@ public class PlayerMovement : MonoBehaviour
         
         // Menghaluskan pergerakan sprite
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        
+        // PENTING: Cegah Rigidbody "tidur" agar ground detection selalu aktif
+        rb.sleepMode = RigidbodySleepMode2D.NeverSleep;
 
         // Biar tidak nempel di tembok saat loncat (friction = 0)
         Collider2D col = GetComponent<Collider2D>();
@@ -94,6 +97,19 @@ public class PlayerMovement : MonoBehaviour
         foreach (ContactPoint2D contact in collision.contacts)
         {
             if (contact.normal.y > 0.5f) // Normal ke atas berarti kita di atas sesuatu
+            {
+                isGrounded = true;
+                break;
+            }
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Deteksi langsung saat mendarat
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            if (contact.normal.y > 0.5f)
             {
                 isGrounded = true;
                 break;
