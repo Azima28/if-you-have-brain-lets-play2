@@ -6,7 +6,8 @@ public class CameraFollow : MonoBehaviour
     public Transform player;
 
     [Header("Settings")]
-    public float smoothSpeed = 5f;
+    [Range(0.01f, 1f)]
+    public float smoothTime = 0.15f;  // Waktu untuk mencapai target (lebih kecil = lebih responsif)
     public Vector3 offset = new Vector3(0, 2, -10);
     
     [Tooltip("Jika dicentang, kamera TIDAK ikut naik turun saat loncat")]
@@ -19,6 +20,7 @@ public class CameraFollow : MonoBehaviour
     private Camera cam;
     private float camHalfHeight;
     private float camHalfWidth;
+    private Vector3 velocity = Vector3.zero;  // Untuk SmoothDamp
 
     // Singleton agar mudah diakses dari Teleporter
     public static CameraFollow Instance { get; private set; }
@@ -54,15 +56,16 @@ public class CameraFollow : MonoBehaviour
             return;
         }
 
+        // Hitung target position
         Vector3 targetPosition = player.position + offset;
 
-        // Jika lockVertical aktif, kamera tidak ikut naik turun
+        // Lock Y jika diaktifkan
         if (lockVertical)
         {
             targetPosition.y = transform.position.y;
         }
 
-        // Terapkan batas dari zone aktif
+        // Clamp target ke batas zone DULU
         if (currentZone != null && currentZone.boundBottomLeft != null && currentZone.boundTopRight != null)
         {
             float minX = currentZone.boundBottomLeft.position.x + camHalfWidth;
@@ -74,7 +77,17 @@ public class CameraFollow : MonoBehaviour
             targetPosition.y = Mathf.Clamp(targetPosition.y, minY, maxY);
         }
 
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, targetPosition, smoothSpeed * Time.deltaTime);
+        // SmoothDamp untuk pergerakan ultra-halus tanpa blink
+        Vector3 smoothedPosition = Vector3.SmoothDamp(
+            transform.position, 
+            targetPosition, 
+            ref velocity, 
+            smoothTime
+        );
+
+        // Pastikan Z tetap (untuk 2D)
+        smoothedPosition.z = offset.z;
+
         transform.position = smoothedPosition;
     }
 
@@ -86,6 +99,7 @@ public class CameraFollow : MonoBehaviour
         if (newZone != null)
         {
             currentZone = newZone;
+            velocity = Vector3.zero;  // Reset velocity saat ganti zone
             Debug.Log("Camera zone changed to: " + newZone.zoneName);
         }
     }
