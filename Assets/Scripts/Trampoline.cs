@@ -15,7 +15,7 @@ public class Trampoline : MonoBehaviour
     public Sprite spriteIdle;
     
     [Tooltip("Sprite saat bounce/tertekan")]
-    public Sprite spriteBounce;
+    public Sprite spriteBounce; 
     
     [Tooltip("Durasi sprite bounce (detik)")]
     public float bounceDuration = 0.15f;
