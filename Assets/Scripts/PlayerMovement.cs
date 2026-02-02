@@ -50,8 +50,19 @@ public class PlayerMovement : MonoBehaviour
     {
         if (rb == null) return;
 
-        // Ambil input di Update agar responsif
-        moveX = Input.GetAxisRaw("Horizontal");
+        // Gabungkan input dari MoveButton (mobile) DAN keyboard
+        float mobileInput = MoveButton.Input;
+        float keyboardInput = Input.GetAxisRaw("Horizontal");
+        
+        // Prioritas: mobile jika ada, kalau tidak pakai keyboard
+        if (Mathf.Abs(mobileInput) > 0.1f)
+        {
+            moveX = mobileInput;
+        }
+        else
+        {
+            moveX = keyboardInput;
+        }
 
         // Berbalik arah sesuai gerakan (sprite default menghadap kiri)
         if (moveX > 0)
@@ -73,13 +84,12 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("IsJump", !isGrounded);
         }
 
-        // Loncat (Space)
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        // Loncat (Space keyboard ATAU JumpButton mobile)
+        bool jumpPressed = Input.GetKeyDown(KeyCode.Space) || JumpButton.IsPressed;
+        if (jumpPressed && isGrounded)
         {
-            // Reset velocity Y sebelum loncat agar kekuatan loncatan konsisten
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             isGrounded = false;
-            Debug.Log("LONCAT!");
         }
     }
 
