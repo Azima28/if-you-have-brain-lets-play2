@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -50,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (rb == null) return;
 
+<<<<<<< Updated upstream
         // Gabungkan input dari MoveButton (mobile) DAN keyboard
         float mobileInput = MoveButton.Input;
         float keyboardInput = Input.GetAxisRaw("Horizontal");
@@ -63,6 +65,17 @@ public class PlayerMovement : MonoBehaviour
         {
             moveX = keyboardInput;
         }
+=======
+        // Jangan proses input jika game sedang di-pause
+        if (Pause.IsPaused)
+        {
+            moveX = 0;
+            return;
+        }
+
+        // Ambil input di Update agar responsif
+        moveX = Input.GetAxisRaw("Horizontal");
+>>>>>>> Stashed changes
 
         // Berbalik arah sesuai gerakan (sprite default menghadap kiri)
         if (moveX > 0)
@@ -101,18 +114,7 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector2(moveX * speed, rb.velocity.y);
     }
 
-    void OnCollisionStay2D(Collision2D collision)
-    {
-        // Mengecek apakah tabrakan terjadi dari bawah (tanah)
-        foreach (ContactPoint2D contact in collision.contacts)
-        {
-            if (contact.normal.y > 0.5f) // Normal ke atas berarti kita di atas sesuatu
-            {
-                isGrounded = true;
-                break;
-            }
-        }
-    }
+    private int groundContactCount = 0;
 
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -121,14 +123,46 @@ public class PlayerMovement : MonoBehaviour
         {
             if (contact.normal.y > 0.5f)
             {
+                groundContactCount++;
                 isGrounded = true;
                 break;
             }
         }
     }
 
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        // Tetap pastikan isGrounded benar jika masih ada kontak
+        if (!isGrounded)
+        {
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                if (contact.normal.y > 0.5f)
+                {
+                    isGrounded = true;
+                    break;
+                }
+            }
+        }
+    }
+
     void OnCollisionExit2D(Collision2D collision)
     {
+        // Hanya set false jika sudah tidak ada kontak dengan tanah sama sekali
+        // Kita perlu mengecek apakah kontak yang keluar adalah kontak tanah
+        // Namun cara termudah dan cukup efektif adalah dengan counter atau raycast.
+        // Di sini saya gunakan pendekatan sederhana: cek ulang saat exit.
+        
+        // Sebagai alternatif yang lebih aman:
+        StartCoroutine(CheckGroundedNextFrame());
+    }
+
+    private IEnumerator CheckGroundedNextFrame()
+    {
+        yield return new WaitForFixedUpdate();
+        // Sederhana: kita anggap tidak grounded dulu, lalu biarkan Stay/Enter yang membenarkannya
+        // Atau biarkan logic counter (jika diimplementasikan penuh).
+        // Untuk sekarang, kita gunakan pendekatan yang lebih stabil:
         isGrounded = false;
     }
 }

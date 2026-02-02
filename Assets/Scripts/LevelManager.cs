@@ -1,4 +1,5 @@
 using UnityEngine;
+<<<<<<< Updated upstream
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -200,5 +201,82 @@ public class LevelManager : MonoBehaviour
         PlayerPrefs.Save();
         currentLevel = 1;
         Debug.Log("All progress reset!");
+=======
+
+/// <summary>
+/// Static manager untuk handle progress level (lock/unlock).
+/// Menggunakan PlayerPrefs untuk menyimpan data.
+/// </summary>
+public static class LevelManager
+{
+    private const string LEVEL_UNLOCKED_KEY = "LevelUnlocked_";
+    private const string MAX_LEVEL_KEY = "MaxUnlockedLevel";
+
+    /// <summary>
+    /// Cek apakah level tertentu sudah terbuka.
+    /// Level 1 selalu terbuka.
+    /// </summary>
+    public static bool IsLevelUnlocked(int level)
+    {
+        if (level <= 1) return true; // Level 1 selalu terbuka
+        return PlayerPrefs.GetInt(LEVEL_UNLOCKED_KEY + level, 0) == 1;
+    }
+
+    /// <summary>
+    /// Unlock level berikutnya setelah menyelesaikan level saat ini.
+    /// Panggil ini di akhir gameplay saat player menang.
+    /// </summary>
+    public static void UnlockNextLevel(int currentLevel)
+    {
+        int nextLevel = currentLevel + 1;
+        PlayerPrefs.SetInt(LEVEL_UNLOCKED_KEY + nextLevel, 1);
+        
+        // Update max level jika ini level tertinggi
+        int maxLevel = GetMaxUnlockedLevel();
+        if (nextLevel > maxLevel)
+        {
+            PlayerPrefs.SetInt(MAX_LEVEL_KEY, nextLevel);
+        }
+        
+        PlayerPrefs.Save();
+        Debug.Log($"[LevelManager] Level {nextLevel} unlocked!");
+    }
+
+    /// <summary>
+    /// Dapatkan level tertinggi yang sudah dibuka.
+    /// </summary>
+    public static int GetMaxUnlockedLevel()
+    {
+        return PlayerPrefs.GetInt(MAX_LEVEL_KEY, 1);
+    }
+
+    /// <summary>
+    /// Reset semua progress (untuk debugging atau new game).
+    /// </summary>
+    public static void ResetProgress()
+    {
+        // Hapus semua level keys (asumsi max 100 level)
+        for (int i = 1; i <= 100; i++)
+        {
+            PlayerPrefs.DeleteKey(LEVEL_UNLOCKED_KEY + i);
+        }
+        PlayerPrefs.SetInt(MAX_LEVEL_KEY, 1);
+        PlayerPrefs.Save();
+        Debug.Log("[LevelManager] All progress reset!");
+    }
+
+    /// <summary>
+    /// Unlock semua level (untuk debugging).
+    /// </summary>
+    public static void UnlockAllLevels(int totalLevels)
+    {
+        for (int i = 1; i <= totalLevels; i++)
+        {
+            PlayerPrefs.SetInt(LEVEL_UNLOCKED_KEY + i, 1);
+        }
+        PlayerPrefs.SetInt(MAX_LEVEL_KEY, totalLevels);
+        PlayerPrefs.Save();
+        Debug.Log($"[LevelManager] All {totalLevels} levels unlocked!");
+>>>>>>> Stashed changes
     }
 }
